@@ -1,0 +1,95 @@
+-- Brainrot Hub (Mobile Friendly)
+
+--// Remotes
+local jumpRemote = game:GetService("ReplicatedStorage").Signal.Trampoline_Server
+local rebirthRemote = game:GetService("ReplicatedStorage").Signal.Rebirth_Server
+
+--// GUI
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Main = Instance.new("Frame", ScreenGui)
+local Title = Instance.new("TextLabel", Main)
+
+Main.Size = UDim2.new(0, 260, 0, 180)
+Main.Position = UDim2.new(0.05, 0, 0.3, 0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.BorderSizePixel = 0
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,12)
+
+-- Title
+Title.Size = UDim2.new(1,0,0,40)
+Title.Text = "Brainrot Hub"
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+
+-- Close Button
+local Close = Instance.new("TextButton", Main)
+Close.Size = UDim2.new(0,30,0,30)
+Close.Position = UDim2.new(1,-35,0,5)
+Close.Text = "X"
+Close.BackgroundColor3 = Color3.fromRGB(200,50,50)
+Close.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", Close).CornerRadius = UDim.new(1,0)
+
+Close.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Toggle Function
+local function createToggle(name, posY)
+    local Frame = Instance.new("Frame", Main)
+    Frame.Size = UDim2.new(1,-20,0,50)
+    Frame.Position = UDim2.new(0,10,0,posY)
+    Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,10)
+
+    local Label = Instance.new("TextLabel", Frame)
+    Label.Size = UDim2.new(0.6,0,1,0)
+    Label.Text = name
+    Label.TextColor3 = Color3.new(1,1,1)
+    Label.BackgroundTransparency = 1
+
+    local Btn = Instance.new("TextButton", Frame)
+    Btn.Size = UDim2.new(0,50,0,25)
+    Btn.Position = UDim2.new(1,-60,0.5,-12)
+    Btn.Text = "OFF"
+    Btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(1,0)
+
+    local state = false
+
+    Btn.MouseButton1Click:Connect(function()
+        state = not state
+        Btn.Text = state and "ON" or "OFF"
+        Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,255) or Color3.fromRGB(60,60,60)
+    end)
+
+    return function() return state end
+end
+
+-- Toggles
+local JumpToggle = createToggle("Auto Jump", 50)
+local RebirthToggle = createToggle("Auto Rebirth", 110)
+
+-- Loops
+task.spawn(function()
+    while true do
+        if JumpToggle() then
+            jumpRemote:FireServer("NormalJump")
+        end
+        task.wait(0.2)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if RebirthToggle() then
+            rebirthRemote:FireServer()
+        end
+        task.wait(1)
+    end
+end)
