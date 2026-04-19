@@ -1,0 +1,87 @@
+repeat task.wait() until game:IsLoaded()
+
+local player = game:GetService("Players").LocalPlayer
+
+-- LOCATIONS
+local Area1 = CFrame.new(-487.105377, 3.99802923, 2906.58813, -0.999976873, -5.27351007e-09, -0.00679987948, -5.99699268e-09, 1, 1.06375992e-07, 0.00679987948, 1.06414312e-07, -0.999976873)
+
+local Area2 = CFrame.new(-436.573273, 3.99802876, 3774.8374, -0.450576752, -3.45703803e-08, -0.892737687, -5.32695914e-08, 1, -1.18381251e-08, 0.892737687, 4.22217887e-08, -0.450576752)
+
+local Area3 = CFrame.new(-464.665314, 3.99802947, -681.358704, -0.997593403, -7.87330805e-08, -0.0693354383, -7.73556152e-08, 1, -2.25517471e-08, 0.0693354383, -1.71339902e-08, -0.997593403)
+
+local LastPos = nil
+
+-- GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+
+local Main = Instance.new("Frame", gui)
+Main.Size = UDim2.new(0,250,0,260)
+Main.Position = UDim2.new(0,20,0.4,0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main)
+
+-- TITLE
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1,0,0,30)
+Title.Text = "JAYPEE FULL HUB"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.BackgroundTransparency = 1
+
+-- BUTTON MAKER
+local function makeBtn(text,y,callback)
+    local b = Instance.new("TextButton", Main)
+    b.Size = UDim2.new(1,-20,0,35)
+    b.Position = UDim2.new(0,10,0,y)
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+
+    b.MouseButton1Click:Connect(callback)
+end
+
+-- TP FUNCTION
+local function tpTo(pos)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    LastPos = hrp.CFrame
+    hrp.CFrame = pos
+end
+
+-- BUTTONS
+makeBtn("TP AREA 1",40,function() tpTo(Area1) end)
+makeBtn("TP AREA 2",80,function() tpTo(Area2) end)
+makeBtn("TP SAFE ZONE",120,function() tpTo(Area3) end)
+
+makeBtn("RTO (Return)",160,function()
+    local char = player.Character
+    if LastPos and char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = LastPos
+    end
+end)
+
+-- CLOSE
+local OpenBtn
+
+makeBtn("CLOSE",200,function()
+    Main.Visible = false
+    OpenBtn.Visible = true
+end)
+
+-- OPEN BUTTON
+OpenBtn = Instance.new("TextButton", gui)
+OpenBtn.Size = UDim2.new(0,60,0,35)
+OpenBtn.Position = UDim2.new(0,20,0.5,0)
+OpenBtn.Text = "OPEN"
+OpenBtn.Visible = false
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
+OpenBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", OpenBtn)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    Main.Visible = true
+    OpenBtn.Visible = false
+end)
