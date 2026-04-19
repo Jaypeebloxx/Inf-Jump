@@ -1,0 +1,110 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "JAYPEE RAYFIELD HUB",
+    LoadingTitle = "Jaypee Hub",
+    LoadingSubtitle = "by Jaypee",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+local Tab = Window:CreateTab("Main", 4483362458)
+
+-- SERVICES
+local player = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TypedRemote = ReplicatedStorage:WaitForChild("Utilities"):WaitForChild("TypedRemote")
+local RebirthRemote = TypedRemote:WaitForChild("RequestRebirth")
+local UpgradeRemote = TypedRemote:WaitForChild("BuyUpgrade")
+
+-- LOCATIONS
+local DivineArea = CFrame.new(8.17600441, 704.25, 1611.49292)
+local SecretArea = CFrame.new(-50.3601379, 495.000031, 1345.39551)
+local Base = CFrame.new(118.260094, 3.89999986, -29.7212238)
+
+-- STATES
+local AutoClaim = false
+local AutoRebirth = false
+local AutoSpeed = false
+
+-- FUNCTION
+local function tp(pos)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    hrp.CFrame = pos
+end
+
+-- BUTTONS (TP)
+Tab:CreateButton({
+    Name = "TP Divine Area",
+    Callback = function()
+        tp(DivineArea)
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Secret Area",
+    Callback = function()
+        tp(SecretArea)
+    end,
+})
+
+Tab:CreateButton({
+    Name = "TP Base (Claim)",
+    Callback = function()
+        tp(Base)
+    end,
+})
+
+-- TOGGLES
+Tab:CreateToggle({
+    Name = "Auto Claim",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoClaim = v
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Auto Rebirth",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoRebirth = v
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Auto Speed Upgrade",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoSpeed = v
+    end,
+})
+
+-- LOOP
+task.spawn(function()
+    while true do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if AutoClaim then
+            hrp.CFrame = Base
+        end
+
+        if AutoRebirth then
+            pcall(function()
+                RebirthRemote:FireServer()
+            end)
+        end
+
+        if AutoSpeed then
+            pcall(function()
+                UpgradeRemote:FireServer("Speed", 5)
+            end)
+        end
+
+        task.wait(0.5)
+    end
+end)
