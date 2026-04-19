@@ -1,0 +1,83 @@
+-- LOAD RAYFIELD
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "HangForBrainrot",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "by Jaypeeblox",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+local Tab = Window:CreateTab("Main", 4483362458)
+
+-- REMOTES
+local buySpeed = game:GetService("ReplicatedStorage").Remotes.BuySpeed
+local rebirthRemote = game:GetService("ReplicatedStorage").Remotes.RebirthRequest
+
+-- TP TO SPAWN
+Tab:CreateButton({
+    Name = "TP to Spawn",
+    Callback = function()
+        game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(
+            103.583168, 29.0010185, 24.6505356,
+            0.0151318172, 1.92696614e-09, -0.999885499,
+            6.11907724e-09, 1, 2.01979011e-09,
+            0.999885499, -6.14893958e-09, 0.0151318172
+        )
+    end
+})
+
+-- TP TO CELESTIAL
+Tab:CreateButton({
+    Name = "TP to Celestial Area",
+    Callback = function()
+        game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(
+            8593.46875, 29.0040703, -19.5712185,
+            -0.999994814, 3.92322619e-09, 0.00322377821,
+            3.79383369e-09, 1, -4.01430107e-08,
+            -0.00322377821, -4.01305691e-08, -0.999994814
+        )
+    end
+})
+
+-- BUY SPEED
+Tab:CreateButton({
+    Name = "Buy Speed",
+    Callback = function()
+        buySpeed:FireServer(1)
+    end
+})
+
+-- AUTO SPEED
+getgenv().AutoSpeed = false
+Tab:CreateToggle({
+    Name = "Auto Buy Speed",
+    CurrentValue = false,
+    Callback = function(Value)
+        getgenv().AutoSpeed = Value
+        while getgenv().AutoSpeed do
+            pcall(function()
+                buySpeed:FireServer(1)
+            end)
+            task.wait(1)
+        end
+    end
+})
+
+-- AUTO REBIRTH
+getgenv().AutoRebirth = false
+Tab:CreateToggle({
+    Name = "Auto Rebirth",
+    CurrentValue = false,
+    Callback = function(Value)
+        getgenv().AutoRebirth = Value
+        while getgenv().AutoRebirth do
+            pcall(function()
+                rebirthRemote:FireServer()
+            end)
+            task.wait(2)
+        end
+    end
+})
