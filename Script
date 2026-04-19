@@ -1,0 +1,149 @@
+-- Brainrot Hub (FINAL WORKING - ARCEUS FIXED)
+
+--// Services
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+-- IMPORTANT (FIX SA ARCEUS)
+local player = Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+--// Remotes
+local jumpRemote = game:GetService("ReplicatedStorage"):WaitForChild("Signal"):WaitForChild("Trampoline_Server")
+local rebirthRemote = game:GetService("ReplicatedStorage"):WaitForChild("Signal"):WaitForChild("Rebirth_Server")
+
+--// States
+local AutoJump = false
+local AutoRebirth = false
+
+-- MAIN FRAME
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0,230,0,260)
+Main.Position = UDim2.new(0,10,0.4,0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,10)
+
+-- HEADER
+local Header = Instance.new("TextButton", Main)
+Header.Size = UDim2.new(1,0,0,40)
+Header.Text = "BECOME A BRAINROT ▼"
+Header.BackgroundTransparency = 1
+Header.TextColor3 = Color3.new(1,1,1)
+Header.Font = Enum.Font.GothamBold
+Header.TextSize = 14
+
+-- CONTENT
+local Content = Instance.new("Frame", Main)
+Content.Size = UDim2.new(1,0,0,200)
+Content.Position = UDim2.new(0,0,0,40)
+Content.BackgroundTransparency = 1
+Content.Visible = true
+
+local open = true
+
+Header.MouseButton1Click:Connect(function()
+    open = not open
+    Content.Visible = open
+    Header.Text = open and "BECOME A BRAINROT ▼" or "BECOME A BRAINROT ▲"
+end)
+
+-- BUTTON MAKER
+local function createButton(text, posY, callback)
+    local Btn = Instance.new("TextButton", Content)
+    Btn.Size = UDim2.new(1,-20,0,35)
+    Btn.Position = UDim2.new(0,10,0,posY)
+    Btn.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    Btn.TextColor3 = Color3.new(1,1,1)
+    Btn.Font = Enum.Font.Gotham
+    Btn.TextSize = 14
+    Btn.Text = text
+
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,6)
+
+    Btn.MouseButton1Click:Connect(function()
+        callback(Btn)
+    end)
+end
+
+-- BUTTONS
+createButton("Auto Jump", 10, function(btn)
+    AutoJump = not AutoJump
+    btn.Text = AutoJump and "Auto Jump ✓" or "Auto Jump"
+end)
+
+createButton("Auto Rebirth", 55, function(btn)
+    AutoRebirth = not AutoRebirth
+    btn.Text = AutoRebirth and "Auto Rebirth ✓" or "Auto Rebirth"
+end)
+
+createButton("Close UI", 100, function()
+    ScreenGui:Destroy()
+end)
+
+-- FOOTER
+local Footer = Instance.new("TextLabel", Content)
+Footer.Size = UDim2.new(1,0,0,30)
+Footer.Position = UDim2.new(0,0,1,-30)
+Footer.Text = "YouTube: Jaypee"
+Footer.BackgroundTransparency = 1
+Footer.TextColor3 = Color3.fromRGB(150,150,150)
+Footer.TextSize = 12
+
+-- DRAG (MOBILE FIXED)
+local dragging, dragInput, dragStart, startPos
+
+Main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+    end
+end)
+
+Main.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- LOOPS
+task.spawn(function()
+    while true do
+        if AutoJump then
+            pcall(function()
+                jumpRemote:FireServer("NormalJump")
+            end)
+        end
+        task.wait(0.2)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if AutoRebirth then
+            pcall(function()
+                rebirthRemote:FireServer()
+            end)
+        end
+        task.wait(1)
+    end)
