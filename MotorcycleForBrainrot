@@ -1,0 +1,136 @@
+repeat task.wait() until game:IsLoaded()
+
+local player = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- LOCATIONS
+local DivineArea = CFrame.new(8.17600441, 704.25, 1611.49292)
+local SecretArea = CFrame.new(-50.3601379, 495.000031, 1345.39551)
+local Base = CFrame.new(118.260094, 3.89999986, -29.7212238)
+
+-- REMOTES
+local TypedRemote = ReplicatedStorage:WaitForChild("Utilities"):WaitForChild("TypedRemote")
+local RebirthRemote = TypedRemote:WaitForChild("RequestRebirth")
+local UpgradeRemote = TypedRemote:WaitForChild("BuyUpgrade")
+
+-- STATES
+local AutoDivine = false
+local AutoSecret = false
+local AutoClaim = false
+local AutoRebirth = false
+local AutoSpeed = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+
+local Main = Instance.new("Frame", gui)
+Main.Size = UDim2.new(0,250,0,340)
+Main.Position = UDim2.new(0,20,0.4,0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main)
+
+-- TITLE
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1,0,0,30)
+Title.Text = "JAYPEE AUTO HUB"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.BackgroundTransparency = 1
+
+-- BUTTON MAKER
+local function makeBtn(text,y,callback)
+    local b = Instance.new("TextButton", Main)
+    b.Size = UDim2.new(1,-20,0,35)
+    b.Position = UDim2.new(0,10,0,y)
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+
+    b.MouseButton1Click:Connect(function()
+        callback(b)
+    end)
+end
+
+-- TOGGLES
+makeBtn("Auto TP Divine: OFF",40,function(btn)
+    AutoDivine = not AutoDivine
+    btn.Text = "Auto TP Divine: " .. (AutoDivine and "ON" or "OFF")
+end)
+
+makeBtn("Auto TP Secret: OFF",80,function(btn)
+    AutoSecret = not AutoSecret
+    btn.Text = "Auto TP Secret: " .. (AutoSecret and "ON" or "OFF")
+end)
+
+makeBtn("Auto Claim: OFF",120,function(btn)
+    AutoClaim = not AutoClaim
+    btn.Text = "Auto Claim: " .. (AutoClaim and "ON" or "OFF")
+end)
+
+makeBtn("Auto Rebirth: OFF",160,function(btn)
+    AutoRebirth = not AutoRebirth
+    btn.Text = "Auto Rebirth: " .. (AutoRebirth and "ON" or "OFF")
+end)
+
+makeBtn("Auto Speed Upgrade: OFF",200,function(btn)
+    AutoSpeed = not AutoSpeed
+    btn.Text = "Auto Speed Upgrade: " .. (AutoSpeed and "ON" or "OFF")
+end)
+
+-- CLOSE / OPEN
+local OpenBtn
+
+makeBtn("CLOSE",240,function()
+    Main.Visible = false
+    OpenBtn.Visible = true
+end)
+
+OpenBtn = Instance.new("TextButton", gui)
+OpenBtn.Size = UDim2.new(0,70,0,35)
+OpenBtn.Position = UDim2.new(0,20,0.5,0)
+OpenBtn.Text = "OPEN"
+OpenBtn.Visible = false
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
+OpenBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", OpenBtn)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    Main.Visible = true
+    OpenBtn.Visible = false
+end)
+
+-- LOOP
+task.spawn(function()
+    while true do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if AutoDivine then
+            hrp.CFrame = DivineArea
+        end
+
+        if AutoSecret then
+            hrp.CFrame = SecretArea
+        end
+
+        if AutoClaim then
+            hrp.CFrame = Base
+        end
+
+        if AutoRebirth then
+            pcall(function()
+                RebirthRemote:FireServer()
+            end)
+        end
+
+        if AutoSpeed then
+            pcall(function()
+                UpgradeRemote:FireServer("Speed", 5)
+            end)
+        end
+
+        task.wait(0.5)
+    end
+end)
