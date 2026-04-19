@@ -1,0 +1,136 @@
+repeat task.wait() until game:IsLoaded()
+
+local player = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- LOCATIONS
+local DivineArea = CFrame.new(8.17600441, 704.25, 1611.49292)
+local SecretArea = CFrame.new(-50.3601379, 495.000031, 1345.39551)
+local Base = CFrame.new(118.260094, 3.89999986, -29.7212238)
+
+-- REMOTES
+local TypedRemote = ReplicatedStorage:WaitForChild("Utilities"):WaitForChild("TypedRemote")
+local RebirthRemote = TypedRemote:WaitForChild("RequestRebirth")
+local UpgradeRemote = TypedRemote:WaitForChild("BuyUpgrade")
+
+-- STATES
+local AutoRebirth = false
+local AutoSpeed = false
+local AutoClaim = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+
+local Main = Instance.new("Frame", gui)
+Main.Size = UDim2.new(0,230,0,260)
+Main.Position = UDim2.new(0,20,0.5,0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main)
+
+-- TITLE
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1,0,0,30)
+Title.Text = "JAYPEE HUB"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.BackgroundTransparency = 1
+
+-- TP FUNCTION
+local function tp(pos)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    hrp.CFrame = pos
+end
+
+-- BUTTON MAKER
+local function makeBtn(text,y,callback)
+    local b = Instance.new("TextButton", Main)
+    b.Size = UDim2.new(1,-20,0,35)
+    b.Position = UDim2.new(0,10,0,y)
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+
+    b.MouseButton1Click:Connect(function()
+        callback(b)
+    end)
+end
+
+-- TP BUTTONS (CLICK LANG)
+makeBtn("TP Divine Area",40,function()
+    tp(DivineArea)
+end)
+
+makeBtn("TP Secret Area",80,function()
+    tp(SecretArea)
+end)
+
+makeBtn("TP Base (Claim)",120,function()
+    tp(Base)
+end)
+
+-- AUTO CLAIM
+makeBtn("Auto Claim: OFF",160,function(btn)
+    AutoClaim = not AutoClaim
+    btn.Text = "Auto Claim: " .. (AutoClaim and "ON" or "OFF")
+end)
+
+-- AUTO REBIRTH
+makeBtn("Auto Rebirth: OFF",200,function(btn)
+    AutoRebirth = not AutoRebirth
+    btn.Text = "Auto Rebirth: " .. (AutoRebirth and "ON" or "OFF")
+end)
+
+-- AUTO SPEED
+makeBtn("Auto Speed: OFF",240,function(btn)
+    AutoSpeed = not AutoSpeed
+    btn.Text = "Auto Speed: " .. (AutoSpeed and "ON" or "OFF")
+end)
+
+-- LOOP
+task.spawn(function()
+    while true do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if AutoClaim then
+            hrp.CFrame = Base
+        end
+
+        if AutoRebirth then
+            pcall(function()
+                RebirthRemote:FireServer()
+            end)
+        end
+
+        if AutoSpeed then
+            pcall(function()
+                UpgradeRemote:FireServer("Speed", 5)
+            end)
+        end
+
+        task.wait(0.5)
+    end
+end)
+-- CLOSE BUTTON
+local OpenBtn
+
+makeBtn("CLOSE",280,function()
+    Main.Visible = false
+    OpenBtn.Visible = true
+end)
+
+-- OPEN BUTTON (VISIBLE SA SCREEN)
+OpenBtn = Instance.new("TextButton", gui)
+OpenBtn.Size = UDim2.new(0,80,0,40)
+OpenBtn.Position = UDim2.new(0,20,0.7,0) -- mas visible
+OpenBtn.Text = "OPEN"
+OpenBtn.Visible = false
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
+OpenBtn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", OpenBtn)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    Main.Visible =
