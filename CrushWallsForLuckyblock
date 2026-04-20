@@ -1,0 +1,55 @@
+-- LOAD RAYFIELD
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Safe TP Hub",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "No Fall",
+    ConfigurationSaving = {Enabled = false}
+})
+
+local Tab = Window:CreateTab("Teleport", 4483362458)
+
+-- SAFE HRP
+local function getHRP()
+    local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+-- SAFE TP FUNCTION
+local function safeTP(cframe)
+    local hrp = getHRP()
+    
+    hrp.Anchored = true
+    hrp.CFrame = cframe + Vector3.new(0, 5, 0)
+    task.wait(0.3)
+    hrp.CFrame = cframe
+    task.wait(0.2)
+    hrp.Anchored = false
+end
+
+-- TP DIVINE
+Tab:CreateButton({
+    Name = "TP to Divine (Safe)",
+    Callback = function()
+        safeTP(CFrame.new(
+            -41.6061134, 4.61251545, 2439.18701,
+            0.941073954, 3.28015948e-09, 0.338200897,
+            5.42180256e-09, 1, -2.47854945e-08,
+            -0.338200897, 2.51586414e-08, 0.941073954
+        ))
+    end
+})
+
+-- TP BASE
+Tab:CreateButton({
+    Name = "TP to Base (Safe)",
+    Callback = function()
+        safeTP(CFrame.new(
+            -50.3195686, 3.11251473, 17.204216,
+            -0.99911797, -9.89604576e-09, -0.0419914015,
+            -1.37054865e-08, 1, 9.04316479e-08,
+            0.0419914015, 9.09274007e-08, -0.99911797
+        ))
+    end
+})
