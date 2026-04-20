@@ -1,0 +1,90 @@
+-- LOAD RAYFIELD
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Universal Hub",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "TP + Noclip + Speed",
+    ConfigurationSaving = {Enabled = false}
+})
+
+local Tab = Window:CreateTab("Main", 4483362458)
+
+-- SAFE HRP
+local function getHRP()
+    local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+-- SAFE TP FUNCTION
+local function safeTP(cf)
+    local hrp = getHRP()
+    hrp.Anchored = true
+    hrp.CFrame = cf + Vector3.new(0,5,0)
+    task.wait(0.3)
+    hrp.CFrame = cf
+    task.wait(0.2)
+    hrp.Anchored = false
+end
+
+-- TP CELESTIAL
+Tab:CreateButton({
+    Name = "TP to Celestial",
+    Callback = function()
+        safeTP(CFrame.new(
+            811.934387, 8.6280241, 1043.74243,
+            -0.999676526, -5.81148685e-10, -0.0254327487,
+            -9.92686155e-10, 1, 1.61687748e-08,
+            0.0254327487, 1.61887908e-08, -0.999676526
+        ))
+    end
+})
+
+-- TP SPAWN
+Tab:CreateButton({
+    Name = "TP to Spawn",
+    Callback = function()
+        safeTP(CFrame.new(
+            741.540771, 8.99802494, -363.727081,
+            -0.988266826, 1.91458813e-08, 0.152737275,
+            1.38944154e-08, 1, -3.54497054e-08,
+            -0.152737275, -3.29115721e-08, -0.988266826
+        ))
+    end
+})
+
+-- NOCLIP
+getgenv().Noclip = false
+
+Tab:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false,
+    Callback = function(Value)
+        getgenv().Noclip = Value
+    end
+})
+
+game:GetService("RunService").Stepped:Connect(function()
+    if getgenv().Noclip then
+        pcall(function()
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end)
+    end
+end)
+
+-- SPEED
+Tab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 200},
+    Increment = 2,
+    CurrentValue = 16,
+    Callback = function(Value)
+        pcall(function()
+            game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = Value
+        end)
+    end
+})
